@@ -18,7 +18,7 @@ DEFAULT_ARGS = {
 }
 
 GCP_PROJECT = Variable.get("GCP_PROJECT_ID")
-ENTITY = "customers"
+ENTITY = "orders"
 SCHEMA_FIELDS = SCHEMA_REGISTRY[ENTITY]
 DAG_ID = f"raw_{ENTITY}"
 SQL_PATH = os.path.join(os.path.dirname(__file__), f"config/{ENTITY}/sql/extraction_query.sql")
