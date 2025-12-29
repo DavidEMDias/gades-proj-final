@@ -285,6 +285,29 @@ services:
     networks:
       - airflow_network
 
+
+#Explicação:
+#build → cria a imagem dbt baseada em Python slim
+#volumes → monta projeto dbt e chave GCP
+#DBT_PROFILES_DIR → indica onde está o profiles.yml
+#command: tail -f /dev/null → mantém o container ativo
+#networks → mesmo que o Airflow para poder fazer docker exec
+  dbt:
+    build:
+      context: .
+      dockerfile: dockerfile
+    container_name: dbt
+    working_dir: /opt/dbt
+    volumes:
+      - ./dbt:/opt/dbt
+      - ./keys:/opt/dbt/keys
+    environment:
+      GCP_PROJECT_ID: ${GCP_PROJECT_ID}
+      DBT_PROFILES_DIR: /opt/dbt
+    command: tail -f /dev/null
+    networks:
+      - airflow_network  
+
 networks:
   airflow_network:
     driver: bridge
