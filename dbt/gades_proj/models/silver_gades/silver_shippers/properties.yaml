@@ -1,0 +1,33 @@
+version: 2
+
+models:
+  - name: silver_shippers
+    description: "Process layer model for the shippers entity from Retail Gades data source"
+    config:
+      materialized: incremental
+      incremental_strategy: merge
+      unique_key: [code_shipper]
+      merge_exclude_columns: [audit_created_at]
+      cluster_by: [audit_updated_at, code_shipper]
+      schema: silver_retail_gades
+      partition_by:
+        field: audit_updated_at
+        data_type: timestamp
+        granularity: hour
+      tags: [process, shippers]
+    columns:
+      - name: code_shipper
+        description: "The unique identifier for each shipper."
+        tests:
+          - unique
+          - not_null
+      - name: dsc_shipper_name
+        description: "The name of the shipper."
+      - name: dsc_shipper_phone
+        description: "The phone number of the shipper."
+      - name: audit_created_at
+        description: "The timestamp when the record was created in the process layer."
+      - name: audit_updated_at
+        description: "The timestamp when the record was last updated in the process layer."
+        tests:
+          - not_null

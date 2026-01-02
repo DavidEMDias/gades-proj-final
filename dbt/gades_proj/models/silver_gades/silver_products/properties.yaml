@@ -1,0 +1,37 @@
+version: 2
+
+models:
+  - name: silver_products
+    description: "Process layer model for the products entity from Retail Gades data source"
+    config:
+      materialized: incremental
+      incremental_strategy: merge
+      unique_key: [code_product]
+      merge_exclude_columns: [audit_created_at]
+      cluster_by: [audit_updated_at, code_product]
+      schema: silver_retail_gades
+      partition_by:
+        field: audit_updated_at
+        data_type: timestamp
+        granularity: hour
+      tags: [process, products]
+    columns:
+      - name: code_product
+        description: "The unique identifier for each product."
+        tests:
+          - unique
+          - not_null
+      - name: dsc_product_name
+        description: "The name of the product."
+      - name: code_category
+        description: "The unique identifier for the category to which the product belongs."
+      - name: dsc_unit
+        description: "The unit of measurement for the product."
+      - name: nmb_price
+        description: "The price of the product."
+      - name: audit_created_at
+        description: "The timestamp when the record was created in the process layer."
+      - name: audit_updated_at
+        description: "The timestamp when the record was last updated in the process layer."
+        tests:
+          - not_null

@@ -1,0 +1,41 @@
+version: 2
+
+models:
+  - name: silver_customers
+    description: "Process layer model for the customers entity from Retail Gades data source"
+    config:
+      materialized: incremental
+      incremental_strategy: merge
+      unique_key: [code_customer]
+      merge_exclude_columns: [audit_created_at]
+      cluster_by: [audit_updated_at, code_customer]
+      schema: silver_retail_gades
+      partition_by:
+        field: audit_updated_at
+        data_type: timestamp
+        granularity: hour
+      tags: [process, customers]
+    columns:
+      - name: code_customer
+        description: "The unique identifier for each customer."
+        tests:
+          - unique
+          - not_null
+      - name: dsc_customer_name
+        description: "The name of the customer."
+      - name: dsc_customer_contact_name
+        description: "The contact name for the customer."
+      - name: dsc_customer_address
+        description: "The address of the customer."
+      - name: dsc_customer_city
+        description: "The city of the customer."
+      - name: dsc_customer_zip_code_prefix
+        description: "The prefix of the customer's ZIP code."
+      - name: dsc_customer_country
+        description: "The country of the customer."
+      - name: audit_created_at
+        description: "The timestamp when the record was created in the process layer."
+      - name: audit_updated_at
+        description: "The timestamp when the record was last updated in the process layer."
+        tests:
+          - not_null

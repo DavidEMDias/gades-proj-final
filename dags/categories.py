@@ -7,6 +7,7 @@ from airflow.providers.google.cloud.transfers.gcs_to_bigquery import GCSToBigQue
 from airflow.models import Variable
 from airflow.operators.python import BranchPythonOperator
 from airflow.operators.empty import EmptyOperator
+from airflow.datasets import Dataset
 
 from datetime import datetime
 import os
@@ -92,8 +93,9 @@ with DAG(
         write_disposition="WRITE_APPEND",
         gcp_conn_id="google_cloud_default",
         autodetect=False, #remover para false se quiser construir o ddl manualmente
-        schema_fields=SCHEMA_FIELDS #Vantanges: Schema do operador é consistente com a tabela, Idempotente, seguro para produção
+        schema_fields=SCHEMA_FIELDS, #Vantanges: Schema do operador é consistente com a tabela, Idempotente, seguro para produção
                                     #Não depende de autodetect, evitando mudanças inesperadas
+        outlets=[Dataset("bronze_categories_dataset_ready")] # This indicates that this task writes to the dataset
     )
 
     build_query_task >> export_to_gcs >> create_table_task >> branch

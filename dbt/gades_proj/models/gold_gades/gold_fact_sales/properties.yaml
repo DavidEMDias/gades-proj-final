@@ -1,0 +1,48 @@
+version: 2
+
+models:
+  - name: gold_fact_sales
+    description: "Fact table of sales at the product/item level, including item-level and order-level metrics."
+    config:
+      materialized: incremental
+      incremental_strategy: merge
+      unique_key: [dd_code_order,sk_product]  # chave única para merge incremental
+      merge_exclude_columns: [audit_created_at] 
+      cluster_by: [dd_code_order, sk_product]  # opcional, melhora performance
+      schema: gold_retail_gades
+      tags: [gold, orders, fact]
+    columns:
+      - name: dd_code_order
+        description: "Degenerate dimension representing the order code."
+        tests:
+          - not_null
+      - name: sk_product
+        description: "Surrogate key for the product (BASE64 SHA256 hash)."
+        tests:
+          - not_null
+      - name: sk_customer
+        description: "Surrogate key for the customer (BASE64 SHA256 hash)."
+        tests:
+          - not_null
+      - name: sk_shipper
+        description: "Surrogate key for the shipper (BASE64 SHA256 hash)."
+        tests:
+          - not_null
+      - name: sk_date_order
+        description: "Surrogate key for the order date (BASE64 SHA256 hash)."
+        tests:
+          - not_null
+      - name: mtr_quantity
+        description: "Quantity of the product in the order item."
+      - name: mrt_product_price
+        description: "Unit price of the product in the order item."
+      - name: mtr_prod_total_amount
+        description: "Total value of the order item (quantity multiplied by unit price)."
+      - name: mtr_order_total_value
+        description: "Total value of the order."
+      - name: mtr_items_per_order
+        description: "Total number of items in the order."
+      - name: audit_created_at
+        description: "The timestamp when the record was created in the gold layer."
+      - name: audit_updated_at
+        description: "The timestamp when the record was last updated in the gold layer."

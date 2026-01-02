@@ -5,25 +5,26 @@ from datetime import datetime
 from airflow.providers.google.cloud.hooks.gcs import GCSHook
 from pathlib import Path
 import os
+from google.api_core.exceptions import NotFound, Conflict
 
-def check_and_create_dataset(dataset_id: str, location= 'europe-southwest1', gcp_conn_id='google_cloud_default'):
-    """
-    Check if a BigQuery dataset exists. If it doesn't, create it.
-    """
-    # Usa o hook do Airflow
+
+def check_and_create_dataset(dataset_id: str, location='europe-southwest1', gcp_conn_id='google_cloud_default'):
     hook = BigQueryHook(gcp_conn_id=gcp_conn_id)
     client = hook.get_client()
-
     dataset_ref = client.dataset(dataset_id)
-    
+
     try:
         client.get_dataset(dataset_ref)
-        return f"Dataset '{dataset_id}' already exists."
-    except Exception:
+        print(f"Dataset '{dataset_id}' already exists.")
+        return
+    except NotFound:
         dataset = bigquery.Dataset(dataset_ref)
         dataset.location = location
-        client.create_dataset(dataset)
-        return f"Dataset '{dataset_id}' created successfully."
+        try:
+            client.create_dataset(dataset)
+            print(f"Dataset '{dataset_id}' created successfully.")
+        except Conflict:
+            print(f"Dataset '{dataset_id}' already exists (Conflict caught).")
 
 def check_and_create_table(project_id: str, dataset_id: str, table_id: str, sql_file_path: str, **kwargs):
     """
@@ -39,27 +40,16 @@ def check_and_create_table(project_id: str, dataset_id: str, table_id: str, sql_
     table_ref = client.dataset(dataset_id).table(table_id)
 
     try:
-        # Check if table exists
         client.get_table(table_ref)
         print(f"Table `{dataset_id}.{table_id}` already exists in project `{project_id}`.")
-        return
-    except Exception:
+    except NotFound:
         print(f"Table `{dataset_id}.{table_id}` does not exist. Creating it...")
-
-        # Read SQL file
         sql_query = Path(sql_file_path).read_text()
-
-        # Replace placeholders
-        sql_query = (
-            sql_query.replace("GCP_PROJECT_ID", project_id)
-                     .replace("DATASET_ID", dataset_id)
-        )
-
-        # Execute query
+        sql_query = sql_query.replace("GCP_PROJECT_ID", project_id).replace("DATASET_ID", dataset_id)
         query_job = client.query(sql_query)
-        query_job.result()  # Wait for completion
-
+        query_job.result()
         print(f"Table `{dataset_id}.{table_id}` has been successfully created.")
+
 
 
 def build_query(bq_dataset, bq_table, sql_path, gcp_conn_id="google_cloud_default"):

@@ -1,0 +1,37 @@
+version: 2
+
+models:
+  - name: gold_dim_customers
+    description: "Gold layer model for customers with incremental updates"
+    config:
+      materialized: incremental
+      incremental_strategy: merge
+      unique_key: code_customer  # chave única para merge incremental
+      merge_exclude_columns: [audit_created_at] 
+      cluster_by: [code_customer]  # opcional, melhora performance
+      schema: gold_retail_gades
+      tags: [gold, customers]
+    columns:
+      - name: sk_customer
+        description: "Surrogate key for the customer, generated using a hash function."
+        tests:
+          - unique
+          - not_null
+      - name: code_customer
+        description: "The unique code identifying the customer."
+      - name: dsc_customer_name
+        description: "The name of the customer."
+      - name: dsc_customer_contact_name
+        description: "The contact name for the customer."
+      - name: dsc_customer_address
+        description: "The address of the customer."
+      - name: dsc_customer_city
+        description: "The city where the customer is located."
+      - name: dsc_customer_zip_code_prefix
+        description: "The zip code prefix for the customer's location."
+      - name: dsc_customer_country
+        description: "The country where the customer is located."
+      - name: audit_created_at
+        description: "The timestamp when the record was created in the gold layer."
+      - name: audit_updated_at
+        description: "The timestamp when the record was last updated in the gold layer."

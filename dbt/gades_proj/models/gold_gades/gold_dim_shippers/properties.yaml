@@ -1,0 +1,27 @@
+version: 2
+
+models:
+  - name: gold_dim_shippers
+    description: "Gold layer model for shippers with incremental updates"
+    config:
+      materialized: incremental
+      incremental_strategy: merge
+      unique_key: code_shipper  # chave única para merge incremental
+      merge_exclude_columns: [audit_created_at] 
+      cluster_by: [code_shipper]  # opcional, melhora performance
+      schema: gold_retail_gades
+      tags: [gold, shippers]
+    columns:
+      - name: sk_shipper
+        description: "Surrogate key for the shipper, generated using a hash function."
+        tests:
+          - unique
+          - not_null
+      - name: code_shipper
+        description: "The unique code identifying the shipper."
+      - name: dsc_shipper_name
+        description: "The name of the shipper."
+      - name: audit_created_at
+        description: "The timestamp when the record was created in the gold layer."
+      - name: audit_updated_at
+        description: "The timestamp when the record was last updated in the gold layer."

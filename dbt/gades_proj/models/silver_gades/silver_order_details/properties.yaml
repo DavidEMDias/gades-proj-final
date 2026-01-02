@@ -1,0 +1,35 @@
+version: 2
+
+models:
+  - name: silver_order_details
+    description: "Process layer model for the order details entity from Retail Gades data source"
+    config:
+      materialized: incremental
+      incremental_strategy: merge
+      unique_key: [code_order_detail]
+      merge_exclude_columns: [audit_created_at]
+      cluster_by: [audit_updated_at, code_order_detail]
+      schema: silver_retail_gades
+      partition_by:
+        field: audit_updated_at
+        data_type: timestamp
+        granularity: hour
+      tags: [process, order_details]
+    columns:
+      - name: code_order_detail
+        description: "The unique identifier for each order detail."
+        tests:
+          - unique
+          - not_null
+      - name: code_order
+        description: "The identifier for the order associated with this detail."
+      - name: code_product
+        description: "The identifier for the product in this order detail."
+      - name: mtr_quantity
+        description: "The quantity of the product ordered."
+      - name: audit_created_at
+        description: "The timestamp when the record was created in the process layer."
+      - name: audit_updated_at
+        description: "The timestamp when the record was last updated in the process layer."
+        tests:
+          - not_null

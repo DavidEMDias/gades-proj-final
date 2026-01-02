@@ -1,0 +1,11 @@
+sources:
+  - name: gades_source
+    database: idyllic-volt-480718-n6
+    schema: retail_gades_bronze
+    tables:
+      - name: bronze_customers
+      - name: bronze_orders
+      - name: bronze_products
+      - name: bronze_order_details
+      - name: bronze_shippers
+      - name: bronze_categories

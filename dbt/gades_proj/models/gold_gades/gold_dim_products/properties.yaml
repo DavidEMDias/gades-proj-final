@@ -1,0 +1,31 @@
+version: 2
+
+models:
+  - name: gold_dim_products
+    description: "Gold layer model for products with incremental updates, sem audit columns na tabela final"
+    config:
+      materialized: incremental
+      incremental_strategy: merge
+      unique_key: code_product  # chave única para merge incremental
+      merge_exclude_columns: [audit_created_at] 
+      cluster_by: [code_product]  # opcional, melhora performance
+      schema: gold_retail_gades
+      tags: [gold, products]
+    columns:
+      - name: sk_product
+        description: "Surrogate key for the product, generated using a hash function."
+        tests:
+          - unique
+          - not_null
+      - name: code_product
+        description: "The unique code identifying the product."
+      - name: dsc_product_name
+        description: "The name of the product."
+      - name: dsc_category_name
+        description: "The name of the product category."
+      - name: dsc_unit
+        description: "The unit of measure for the product."
+      - name: audit_created_at
+        description: "The timestamp when the record was created in the gold layer."
+      - name: audit_updated_at
+        description: "The timestamp when the record was last updated in the gold layer."
