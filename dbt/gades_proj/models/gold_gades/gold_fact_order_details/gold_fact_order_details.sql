@@ -45,7 +45,7 @@ SELECT
     d.mrt_product_price,
     (d.mtr_quantity * d.mrt_product_price) AS mtr_prod_total_amount,
 
-    -- Métricas por pedido 
+    -- !!! Métricas por order !!! Podem ser criada uma fact_orders com estas métricas
     o.mtr_order_total_value,
     o.mtr_items_per_order,
 

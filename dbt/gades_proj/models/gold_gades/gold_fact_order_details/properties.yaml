@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: gold_fact_sales
+  - name: gold_fact_order_details
     description: "Fact table of sales at the product/item level, including item-level and order-level metrics."
     config:
       materialized: incremental
