@@ -98,8 +98,8 @@ with DAG(
         outlets=[Dataset("bronze_products_dataset_ready")] # This indicates that this task writes to the dataset
     )
 
-    build_query_task >> export_to_gcs >> create_table_task >> branch
-    branch >> load_to_bigquery
+    build_query_task >> export_to_gcs  >> branch
+    branch >> create_table_task >> load_to_bigquery
     branch >> skip_task
 
 
