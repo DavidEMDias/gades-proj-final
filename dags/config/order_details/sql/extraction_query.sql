@@ -7,4 +7,4 @@ SELECT
     updated_at
 FROM `gades-dataeng`.order_details
 WHERE
-    updated_at > '{{last_updated}}'
+    STR_TO_DATE(updated_at, '%Y-%m-%d %H:%i:%s') > '{{last_updated}}'
