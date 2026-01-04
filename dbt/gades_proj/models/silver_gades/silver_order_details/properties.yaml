@@ -27,6 +27,8 @@ models:
         description: "The identifier for the product in this order detail."
       - name: mtr_quantity
         description: "The quantity of the product ordered."
+      - name: mrt_product_price
+        description: "The price of the product in the order."
       - name: audit_created_at
         description: "The timestamp when the record was created in the process layer."
       - name: audit_updated_at

@@ -10,7 +10,7 @@ WITH source AS (
             PARTITION BY source_table.code_order, source_table.code_product
             ORDER BY source_table.audit_updated_at DESC
         ) AS _r
-    FROM {{ ref('silver_orders') }} source_table
+    FROM {{ ref('silver_order_details') }} source_table
     {% if is_incremental() %}
     WHERE source_table.audit_updated_at > '{{ result }}'
     {% endif %}
@@ -36,9 +36,9 @@ SELECT
     
 
     TO_BASE64(SHA256(COALESCE(CAST(d.code_product as STRING), '-1'))) AS sk_product,
-    TO_BASE64(SHA256(COALESCE(CAST(d.code_customer as STRING), '-1'))) AS sk_customer,
-    TO_BASE64(SHA256(COALESCE(CAST(d.code_shipper as STRING), '-1'))) AS sk_shipper,
-    TO_BASE64(SHA256(COALESCE(CAST(d.dsc_order_date as STRING), '-1'))) AS sk_date_order,
+    TO_BASE64(SHA256(COALESCE(CAST(o.code_customer as STRING), '-1'))) AS sk_customer,
+    TO_BASE64(SHA256(COALESCE(CAST(o.code_shipper as STRING), '-1'))) AS sk_shipper,
+    TO_BASE64(SHA256(COALESCE(CAST(o.dsc_order_date as STRING), '-1'))) AS sk_date_order,
 
     -- Métricas por item
     d.mtr_quantity,
@@ -46,12 +46,14 @@ SELECT
     (d.mtr_quantity * d.mrt_product_price) AS mtr_prod_total_amount,
 
     -- !!! Métricas por order !!! Podem ser criada uma fact_orders com estas métricas
-    o.mtr_order_total_value,
-    o.mtr_items_per_order,
+    om.mtr_order_total_value,
+    om.mtr_items_per_order,
 
     CURRENT_TIMESTAMP AS audit_created_at,
     CURRENT_TIMESTAMP AS audit_updated_at
 
 FROM dedup d
-LEFT JOIN metrics_per_order o
+LEFT JOIN {{ ref('silver_orders') }} AS o
     ON d.code_order = o.code_order
+LEFT JOIN metrics_per_order om
+    ON d.code_order = om.code_order

@@ -32,20 +32,15 @@ from dedup
 where _rn = 1
 )
 
---Cada linha = um produto por pedido (unique key = code_order + code_product)
+--Cada linha = um pedido
 select 
     o.code_order,
-    od.code_product,
+    --od.code_product,
     o.code_customer,
     o.code_shipper,
     o.dsc_order_date,
-    od.mtr_quantity,
-    p.nmb_price as mrt_product_price,
+    --od.mtr_quantity,
+    --p.nmb_price as mrt_product_price,
     CURRENT_TIMESTAMP AS audit_created_at,
     CURRENT_TIMESTAMP AS audit_updated_at
 from pre_join_orders o
-left join {{ ref('silver_order_details') }} as od
-on o.code_order = od.code_order
-left join {{ ref('silver_products') }} as p
-on od.code_product = p.code_product
-    
