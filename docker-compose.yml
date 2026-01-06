@@ -252,6 +252,10 @@ services:
 
         # Set Airflow variables
         echo "####################################"
+        echo "${GCP_PROJECT_ID}"
+        echo "${BRONZE_GCS_BUCKET_NAME}"
+        /entrypoint airflow variables set GCP_PROJECT_ID "${GCP_PROJECT_ID}"
+        /entrypoint airflow variables set BRONZE_GCS_BUCKET_NAME "${BRONZE_GCS_BUCKET_NAME}"
         
         echo "Initialization complete."
         exec /entrypoint airflow version
