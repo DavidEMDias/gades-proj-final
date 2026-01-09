@@ -25,7 +25,7 @@ dedup AS (
 metrics_per_order AS (
     SELECT
         code_order,
-        SUM(mtr_quantity * mrt_product_price) AS mtr_order_total_value,
+        SUM(mtr_quantity * mtr_product_price) AS mtr_order_total_value,
         COUNT(code_product) AS mtr_items_per_order
     FROM dedup
     GROUP BY code_order
@@ -42,8 +42,8 @@ SELECT
 
     -- Métricas por item
     d.mtr_quantity,
-    d.mrt_product_price,
-    (d.mtr_quantity * d.mrt_product_price) AS mtr_prod_total_amount,
+    d.mtr_product_price,
+    (d.mtr_quantity * d.mtr_product_price) AS mtr_prod_total_amount,
 
     -- !!! Métricas por order !!! Podem ser criada uma fact_orders com estas métricas
     om.mtr_order_total_value,

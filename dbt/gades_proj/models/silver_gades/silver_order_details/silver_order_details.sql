@@ -26,7 +26,7 @@ select
     OrderID as code_order,
     ProductID as code_product,
     Quantity as mtr_quantity,
-    p.nmb_price as mrt_product_price,
+    p.nmb_price as mtr_product_price,
     CURRENT_TIMESTAMP AS audit_created_at,
     CURRENT_TIMESTAMP AS audit_updated_at
 from dedup

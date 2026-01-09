@@ -68,7 +68,8 @@ with DAG(
     )
 
     skip_task = EmptyOperator(
-        task_id="skip_load"
+        task_id="skip_load",
+        outlets=[Dataset("bronze_categories_dataset_ready")] # This indicates that this task writes to the dataset
     )
 
 #Manually create the table

@@ -10,7 +10,7 @@ models:
       merge_exclude_columns: [audit_created_at] 
       cluster_by: [dd_code_order, sk_product]  # opcional, melhora performance
       schema: gold_retail_gades
-      tags: [gold, orders, fact]
+      tags: [gold, order_details, fact]
     columns:
       - name: dd_code_order
         description: "Degenerate dimension representing the order code."
@@ -46,3 +46,10 @@ models:
         description: "The timestamp when the record was created in the gold layer."
       - name: audit_updated_at
         description: "The timestamp when the record was last updated in the gold layer."
+
+# # Test combination uniqueness - Make sure the dbt_utils package is installed in your packages.yml
+#  tests:
+#    - dbt_utils.unique_combination_of_columns:
+#        combination_of_columns:
+#          - dd_code_order
+#          - sk_product
