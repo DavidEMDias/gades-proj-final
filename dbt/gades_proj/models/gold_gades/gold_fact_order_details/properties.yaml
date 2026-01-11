@@ -40,6 +40,11 @@ models:
         description: "Total value of the order item (quantity multiplied by unit price)."
       - name: mtr_order_total_value
         description: "Total value of the order."
+      - name: mtr_order_total_value_allocated
+        description: >
+          Order total value evenly allocated across order items.
+          This metric is additive at the item and product level and
+          can be safely summed without double counting.
       - name: mtr_items_per_order
         description: "Total number of items in the order."
       - name: audit_created_at

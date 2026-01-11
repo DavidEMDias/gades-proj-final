@@ -45,8 +45,9 @@ SELECT
     d.mtr_product_price,
     (d.mtr_quantity * d.mtr_product_price) AS mtr_prod_total_amount,
 
-    -- !!! Métricas por order !!! Podem ser criada uma fact_orders com estas métricas
-    om.mtr_order_total_value,
+    -- !!! Métricas por order !!! Pode ser criada uma fact_orders com estas métricas ao nivel do pedido
+    om.mtr_order_total_value, -- semi-aditiva (pode ser agregada a algumas dimensoes, nao pode ser somada em outras e.g. produto, item)
+    om.mtr_order_total_value / om.mtr_items_per_order as mtr_order_total_value_allocated, -- aditiva (analises por produto funcionam) 
     om.mtr_items_per_order,
 
     CURRENT_TIMESTAMP AS audit_created_at,
